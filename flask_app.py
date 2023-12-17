@@ -61,7 +61,7 @@ app = flask.Flask(__name__)
 def index():
     json_string = flask.request.get_data().decode('utf-8')
     print(json_string)
-    return ' Hello, World!'
+    return ' Hello, World! - this is the test server'
 
 # @app.route(WEBHOOK_URL_PATH, methods=['POST'])
 # def webhook():
