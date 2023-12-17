@@ -3,7 +3,7 @@ import time
 
 import flask
 
-# import telebot
+import telebot
 
 import our_parser
 
@@ -22,36 +22,26 @@ WEBHOOK_URL_PATH = f"/{API_TOKEN}/"
 
 
 
-# bot = telebot.TeleBot(API_TOKEN, threaded=True)
-# logger = telebot.logger
-# telebot.logger.setLevel(logging.INFO)
-# bot.remove_webhook()
-# bot.polling()
-# time.sleep(1)
-# bot.set_webhook(url=f"{WEBHOOK_URL_BASE}{WEBHOOK_URL_PATH}",
-#                 certificate = open(WEBHOOK_SSL_CERT, 'r'))
-
-#debug----------------------------------------------------------------
-# webhook_info = bot.get_webhook_info()
-# if webhook_info.url:
-#     print("Webhook is set")
-#     print("Webhook URL:", webhook_info.url)
-# else:
-#     print("Webhook is not set")
-#debug----------------------------------------------------------------
+bot = telebot.TeleBot(API_TOKEN, threaded=True)
+logger = telebot.logger
+telebot.logger.setLevel(logging.INFO)
+bot.remove_webhook()
+bot.polling()
+time.sleep(1)
+bot.set_webhook(url=f"{WEBHOOK_URL_BASE}{WEBHOOK_URL_PATH}")
 
 
-# @bot.message_handler(commands=['help', 'start'])
-# def send_welcome(message):
-#     bot.reply_to(message,
-#                  ("Hi there, I am EchoBot.\n"
-#                   "I am here to echo your kind words back to you."))
+@bot.message_handler(commands=['help', 'start'])
+def send_welcome(message):
+    bot.reply_to(message,
+                 ("Hi there, I am EchoBot.\n"
+                  "I am here to echo your kind words back to you."))
 
 
-# @bot.message_handler(func=lambda message: True, content_types=['text'])
-# def echo_message(message):
-#     time.sleep(1)
-#     bot.reply_to(message, message.text)
+@bot.message_handler(func=lambda message: True, content_types=['text'])
+def echo_message(message):
+    time.sleep(1)
+    bot.reply_to(message, message.text)
 
 
 app = flask.Flask(__name__)
@@ -63,16 +53,16 @@ def index():
     print(json_string)
     return ' Hello, World! - this is the test server'
 
-# @app.route(WEBHOOK_URL_PATH, methods=['POST'])
-# def webhook():
-#     print("abc")
-#     if flask.request.headers.get('content-type') == 'application/json':
-#         json_string = flask.request.get_data().decode('utf-8')
-#         update = telebot.types.Update.de_json(json_string)
-#         bot.process_new_updates([update])
-#         return ''
-#     else:
-#         flask.abort(403)
+@app.route(WEBHOOK_URL_PATH, methods=['POST'])
+def webhook():
+    print("abc")
+    if flask.request.headers.get('content-type') == 'application/json':
+        json_string = flask.request.get_data().decode('utf-8')
+        update = telebot.types.Update.de_json(json_string)
+        bot.process_new_updates([update])
+        return ''
+    else:
+        flask.abort(403)
 
 
 # app.run(host=WEBHOOK_LISTEN,
