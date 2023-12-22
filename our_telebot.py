@@ -2,83 +2,122 @@ import telebot
 from telebot import TeleBot, types
 
 
-# menus = { "Init": ["World", "Stats"],
-#             "World": ["Move", "Characters"],
-#             }
+class GameBotHandler():
 
-class GameBot():
+    @staticmethod
+    def create_cancel_button():
+        markup = types.ReplyKeyboardMarkup()
+        markup.add('Отмена')
+        return markup
 
-    def __init__(self, token):
-        self.bot = TeleBot(token)
+    @staticmethod
+    def create_in_up_buttons():
+        markup = types.ReplyKeyboardMarkup()
+        markup.add(types.KeyboardButton(text = "Зарегистрироваться"),
+                   types.KeyboardButton(text = "Войти"),
+                   types.KeyboardButton(text = "Отмена"))
+        return markup
 
-        # start callbacks
-        @.message_handler(commands=['start'])
-        def handle_init(self, message):
-            self.CreateInitButtons(message)
-
-        # # first level callbacks
-        # @self.bot.message_handler(func=lambda message: message.text == "Map")
-        # def characters_reply(self, message):
-        #     self.CreateNpcButtons(message)
-
-        # @self.bot.message_handler(func=lambda message: message.text == "Items")
-        # def items_reply(self, message):
-        #     self.CreateItemsButtons(message)
-
-        # # second level callbacks
-        # @self.bot.message_handler(func=lambda message: message.text == "Move 1")
-        # def handle_cButton1(self, message):
-        #     self.send_message(message.chat.id, "cButton 1 pressed")
-
-
-        # @self.bot.message_handler(func=lambda message: message.text == "Move 2")
-        # def handle_cButton2(self, message):
-        #     self.send_message(message.chat.id, "cButton 2 pressed")
-
-        # @self.bot.message_handler(func=lambda message: message.text == "cBack")
-        # def handle_cBack(self, message):
-        #     self.CreateInitButtons(message)
-
-        # @self.bot.message_handler(func=lambda message: message.text == "iButton 1")
-        # def handle_iButton1(self, message):
-        #     self.send_message(message.chat.id, "iButton 1 pressed")
-
-        # @self.bot.message_handler(func=lambda message: message.text == "iButton 2")
-        # def handle_iButton2(self, message):
-        #     self.send_message(message.chat.id, "iButton 2 pressed")
-
-        # @self.bot.message_handler(func=lambda message: message.text == "iBack")
-        # def handle_iBack(self, message):
-        #     self.CreateInitButtons(message)
-
-#functions
-#********************************************************************************
-    def CreateInitButtons(self,message, menus):
-        markup = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
-        for menu in menus:
-            bttn = types.KeyboardButton(menu)
-            markup.add(bttn)
-            markup.add(bttn)
-        self.send_message(message.chat.id, "Welcome",
-                          reply_markup=markup)
+    @staticmethod
+    def create_game_buttons():
+        markup = types.ReplyKeyboardMarkup()
+        markup.row(types.KeyboardButton(text = "Персонажи"),
+                   types.KeyboardButton(text = "Враги"))
+        markup.row(types.KeyboardButton(text = "Инвентарь"),
+                   types.KeyboardButton(text = "Карта"),)
+        markup.row(types.KeyboardButton(text = "Герой"),
+                   types.KeyboardButton(text = "Выход"))
+        return markup
 
 
-    def CreateNpcButtons(self, message):
-        markup = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
-        chars = types.KeyboardButton("cButton 1")
-        items = types.KeyboardButton("cButton 2")
-        back_bttn = types.KeyboardButton("cBack")
-        markup.add(chars, items, back_bttn)
-        self.send_message(message.chat.id, "this is the wrapper to characters",
-                        reply_markup=markup)
+    @staticmethod
+    def create_dict_buttons(npc_dict):
+        markup = types.ReplyKeyboardMarkup()
+        for word in npc_dict:
+            value = list(word.values())[0]
+            markup.add(types.KeyboardButton(text = value))
+        markup.row(types.KeyboardButton(text = "Назад"))
+        return markup
 
 
-    def CreateItemsButtons(self, message):
-        markup = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
-        chars = types.KeyboardButton("iButton 1")
-        items = types.KeyboardButton("iButton 2")
-        back_bttn = types.KeyboardButton("iBack")
-        markup.add(chars, items, back_bttn)
-        self.send_message(message.chat.id, "this is the wrapper to items",
-                          reply_markup=markup)
-#********************************************************************************
+    @staticmethod
+    def create_location_buttons(locations):
+        markup = types.ReplyKeyboardMarkup()
+        for location in locations:
+            value = location['name']
+            markup.add(types.KeyboardButton(text = value))
+        markup.row(types.KeyboardButton(text = "Назад"))
+        return markup
+
+    @staticmethod
+    def create_enemy_buttons():
+        markup = types.ReplyKeyboardMarkup()
+        markup.row(types.KeyboardButton(text = "Инфо"),
+                   types.KeyboardButton(text = "Бой"),
+                   types.KeyboardButton(text = "Back"))
+        return markup
+
+
+    @staticmethod
+    def create_npcs_buttons():
+        markup = types.ReplyKeyboardMarkup()
+        markup.row(types.KeyboardButton(text = "Инфо"),
+                   types.KeyboardButton(text = "Взять квест"),
+                   types.KeyboardButton(text = "Поговорить"),
+                   types.KeyboardButton(text = "Назад"))
+        return markup
+
+
+    @staticmethod
+    def create_location_act_buttons():
+        markup = types.ReplyKeyboardMarkup()
+        markup.row(types.KeyboardButton(text = "Инфо"),
+                   types.KeyboardButton(text = "Перейти"),
+                   types.KeyboardButton(text = "Назад"))
+        return markup
+
+    @staticmethod
+    def create_locations_buttons(locations):
+        markup = types.ReplyKeyboardMarkup()
+        for word in locations:
+            markup.add(types.KeyboardButton(text = word['name']))
+        markup.row(types.KeyboardButton(text = "Back"))
+        return markup
+
+    @staticmethod
+    def create_hero_buttons():
+        markup = types.ReplyKeyboardMarkup()
+        markup.row(
+                   types.KeyboardButton(text = "Инвентарь"),
+                   types.KeyboardButton(text = "Инфо"),
+                   types.KeyboardButton(text = "Лечиться"))
+        markup.row(
+                   types.KeyboardButton(text = "Квесты"),
+                   types.KeyboardButton(text = "Назад"))
+        return markup
+
+    @staticmethod
+    def create_quests_list_buttons(quests):
+        markup = types.ReplyKeyboardMarkup()
+        for quest in quests:
+            markup.add(types.KeyboardButton(text = quest.get_name()))
+        markup.row(types.KeyboardButton(text = "Назад"))
+        return markup
+
+    @staticmethod
+    def create_quests_list_buttons(quests):
+        markup = types.ReplyKeyboardMarkup()
+        for quest in quests:
+            markup.add(types.KeyboardButton(text = quest.get_name()))
+        markup.row(types.KeyboardButton(text = "Назад"))
+        return markup
+
+    @staticmethod
+    def create_answer_buttons(count):
+        markup = types.ReplyKeyboardMarkup()
+        for i in range(count):
+            markup.add(types.KeyboardButton(text = i+1))
+        markup.row(types.KeyboardButton(text = "Окончить беседу"))
+        return markup
+
+
