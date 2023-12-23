@@ -1,5 +1,9 @@
 from flask import Flask
 
+# import json
+# import logging
+
+
 import telebot
 from telebot import types
 
@@ -23,8 +27,6 @@ bot = telebot.TeleBot(token, threaded=False)
 db = DB()
 db.create_tables()
 gamers_set = set()
-
-app = Flask(__name__)
 
 #*************************************************************************************
 #*************************************************************************************
