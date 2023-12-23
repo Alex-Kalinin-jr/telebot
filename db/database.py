@@ -42,9 +42,12 @@ class DB:
 
         :return: The characters data.
         """
-        with open(FILE_CHARACTERS) as fp:
-            data = json.load(fp)
-            return data
+        try:
+            with open(FILE_CHARACTERS) as fp:
+                data = json.load(fp)
+                return data
+        except FileNotFoundError:
+            print(f"Ошибка: Файл {FILE_DIALOGS} не найден.")
 
     def get_npc(self, ident: str):
         """
@@ -56,9 +59,12 @@ class DB:
         Returns:
             dict: The NPC data as a dictionary if found, None otherwise.
         """
-        with open(FILE_CHARACTERS) as fp:
-            data = json.load(fp)
-            return data.get(ident)
+        try:
+            with open(FILE_CHARACTERS) as fp:
+                data = json.load(fp)
+                return data.get(ident)
+        except FileNotFoundError:
+            print(f"Ошибка: Файл {FILE_DIALOGS} не найден.")
 
     def get_enemies(self):
         """
@@ -70,9 +76,12 @@ class DB:
         Returns:
             dict: The data containing the enemies.
         """
-        with open(FILE_ENEMIES) as fp:
-            data = json.load(fp)
-            return data
+        try:
+            with open(FILE_ENEMIES) as fp:
+                data = json.load(fp)
+                return data
+        except FileNotFoundError:
+            print(f"Ошибка: Файл {FILE_DIALOGS} не найден.")
 
     def get_enemy(self, ident: str):
         """
@@ -84,9 +93,12 @@ class DB:
         Returns:
             dict or None: The enemy data if found, None otherwise.
         """
-        with open(FILE_ENEMIES) as fp:
-            data = json.load(fp)
-            return data.get(ident)
+        try:
+            with open(FILE_ENEMIES) as fp:
+                data = json.load(fp)
+                return data.get(ident)
+        except FileNotFoundError:
+            print(f"Ошибка: Файл {FILE_DIALOGS} не найден.")
 
     def get_dialogs(self):
         """
@@ -104,9 +116,12 @@ class DB:
         Returns:
             dict: The data read from the search quests file.
         """
-        with open(FILE_SEARCH_QUESTS) as fp:
-            data = json.load(fp)
-            return data
+        try:
+            with open(FILE_SEARCH_QUESTS) as fp:
+                data = json.load(fp)
+                return data
+        except FileNotFoundError:
+            print(f"Ошибка: Файл {FILE_DIALOGS} не найден.")
 
     def get_search_quest(self, ident: str):
         """
@@ -118,9 +133,12 @@ class DB:
         Returns:
             Any: The search quest associated with the identifier, or None if not found.
         """
-        with open(FILE_SEARCH_QUESTS) as fp:
-            data = json.load(fp)
-            return data.get(ident)
+        try:
+            with open(FILE_SEARCH_QUESTS) as fp:
+                data = json.load(fp)
+                return data.get(ident)
+        except FileNotFoundError:
+            print(f"Ошибка: Файл {FILE_DIALOGS} не найден.")
 
     def get_riddle_quests(self):
         """
@@ -129,9 +147,12 @@ class DB:
         Returns:
             dict: The riddle quests data.
         """
-        with open(FILE_RIDDLE_QUESTS) as fp:
-            data = json.load(fp)
-            return data
+        try:
+            with open(FILE_RIDDLE_QUESTS) as fp:
+                data = json.load(fp)
+                return data
+        except FileNotFoundError:
+            print(f"Ошибка: Файл {FILE_DIALOGS} не найден.")
 
     def get_riddle_quest(self, ident: str):
         """
@@ -143,9 +164,12 @@ class DB:
         Returns:
             str: The riddle quest associated with the provided identifier.
         """
-        with open(FILE_RIDDLE_QUESTS) as fp:
-            data = json.load(fp)
-            return data.get(ident)
+        try:
+            with open(FILE_RIDDLE_QUESTS) as fp:
+                data = json.load(fp)
+                return data.get(ident)
+        except FileNotFoundError:
+            print(f"Ошибка: Файл {FILE_DIALOGS} не найден.")
 
     def get_locations(self) -> list[dict]:
         """
@@ -154,9 +178,12 @@ class DB:
         :return: A list of dictionaries representing the locations.
         :rtype: list[dict]
         """
-        with open(FILE_LOCATIONS) as fp:
-            data = json.load(fp)
-            return data
+        try:
+            with open(FILE_LOCATIONS) as fp:
+                data = json.load(fp)
+                return data
+        except FileNotFoundError:
+            print(f"Ошибка: Файл {FILE_DIALOGS} не найден.")
 
     def get_location(self, key: str) -> dict:
         """
@@ -168,18 +195,24 @@ class DB:
         Returns:
             dict: The location associated with the given key, or None if the key is not found.
         """
-        with open(FILE_LOCATIONS) as fp:
-            data = json.load(fp)
-            return data.get(key)
+        try:
+            with open(FILE_LOCATIONS) as fp:
+                data = json.load(fp)
+                return data.get(key)
+        except FileNotFoundError:
+            print(f"Ошибка: Файл {FILE_DIALOGS} не найден.")
 
     def _init_dialogs(self):
         """
         Initializes the dialogs by reading the data from the FILE_DIALOGS file
         and converting it to the appropriate format.
         """
-        with open(FILE_DIALOGS) as fp:
-            data = json.load(fp)
-            self._convert_dialogs(data)
+        try:
+            with open(FILE_DIALOGS) as fp:
+                data = json.load(fp)
+                self._convert_dialogs(data)
+        except FileNotFoundError:
+            print(f"Ошибка: Файл {FILE_DIALOGS} не найден.")
 
     def _convert_dialogs(self, dialogs_lst, prefix=''):
         """

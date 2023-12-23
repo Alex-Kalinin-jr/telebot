@@ -44,7 +44,7 @@ class GameBotHandler():
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.row(types.KeyboardButton(text = "👩‍🎨 Персонажи"),
                    types.KeyboardButton(text = "🧛‍♂️ Враги"))
-        markup.row(types.KeyboardButton(text = "🧳 Инвентарь"),
+        markup.row(types.KeyboardButton(text = "🎲 Правила"),
                    types.KeyboardButton(text = "🌍 Карта"),)
         markup.row(types.KeyboardButton(text = "🥷 Герой"),
                    types.KeyboardButton(text = "❌ Выход"))
@@ -65,6 +65,24 @@ class GameBotHandler():
         for word in npc_dict:
             value = list(word.values())[0]
             markup.add(types.KeyboardButton(text = f'👳 {value}'))
+        markup.row(types.KeyboardButton(text = "❌ Назад"))
+        return markup
+
+    @staticmethod
+    def create_enemy_list_buttons(npc_dict):
+        """
+        Generate a ReplyKeyboardMarkup with buttons based on the given npc_dict.
+
+        Args:
+            npc_dict (dict): A dictionary containing the NPC data.
+
+        Returns:
+            types.ReplyKeyboardMarkup: The generated ReplyKeyboardMarkup object.
+        """
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        for word in npc_dict:
+            value = list(word.values())[0]
+            markup.add(types.KeyboardButton(text = f'🧛‍♂️ {value}'))
         markup.row(types.KeyboardButton(text = "❌ Назад"))
         return markup
 
@@ -165,10 +183,10 @@ class GameBotHandler():
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.row(
                    types.KeyboardButton(text = "🧳 Инвентарь"),
-                   types.KeyboardButton(text = "❓ Инфо"),
+                   types.KeyboardButton(text = "🧩 Квесты"),
                    types.KeyboardButton(text = "➕ Лечение"))
         markup.row(
-                   types.KeyboardButton(text = "🧩 Квесты"),
+                   types.KeyboardButton(text = "❓ Инфо"),
                    types.KeyboardButton(text = "❌ Назад"))
         return markup
 

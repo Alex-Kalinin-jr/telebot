@@ -185,7 +185,7 @@ class Protagonist:
         """
         if "Зелье" in self.inventory and self.inventory["Зелье"] > 0 and self.hp < 10:
             self.hp += value
-            self.inventory["potion"] -= 1
+            self.inventory["Зелье"] -= 1
             return True
         return False
 
