@@ -1,4 +1,6 @@
-from flask import Flask, request
+# import json
+# import logging
+
 
 import telebot
 from telebot import types
@@ -15,33 +17,41 @@ import quests as qw
 import time
 
 
-
-
-
-#*************************************************************************************
-#*************************************************************************************
-#*************************************************************************************
-#*************************************************************************************
-
 token = '6971180350:AAEEaXKPTSnEiYBzdIvLXo0rVQByQreZUbY'
-secret = 'dfugvy78v7v8tw7v7cde9'
-url = 'https://cursebow.pythonanywhere.com/' + secret
+bot = telebot.TeleBot(token, threaded=False)
 
 db = DB()
 db.create_tables()
 gamers_set = set()
 
-bot = telebot.TeleBot(token, threaded=False)
-bot.remove_webhook()
-bot.set_webhook(url=url)
+#*************************************************************************************
+#*************************************************************************************
+#*************************************************************************************
+#*************************************************************************************
+
+# import telebot
+# from telebot import types
+# from flask import Flask, request
+
+# token = '6769840382:AAFAdvy-2e2VozIQGTIMYYluRaPPR9Ea6rA'
+# secret = 'dfugvy78v7v8tw7v7cde9'
+# url = 'https://cursebow.pythonanywhere.com/' + secret
+
+# bot = telebot.TeleBot(token, threaded=False)
+# bot.remove_webhook()
+# bot.set_webhook(url=url)
+
+# menus_list = { "Init": ["World", "Stats"],
+#                 "World": ["Move", "Characters"],
+#                 }
 
 
-app = Flask(__name__)
-@app.route('/'+secret, methods=['POST'])
-def webhook():
-    update = telebot.types.Update.de_json(request.stream.read().decode('utf-8'))
-    bot.process_new_updates([update])
-    return 'ok', 200
+# app = Flask(__name__)
+# @app.route('/'+secret, methods=['POST'])
+# def webhook():
+#     update = telebot.types.Update.de_json(request.stream.read().decode('utf-8'))
+#     bot.process_new_updates([update])
+#     return 'ok', 200
 #******************************************************************************************
 #******************************************************************************************
 
@@ -91,21 +101,21 @@ def handle_init(message):
     go_to_authorizing_buttons(message)
 
 
-# @bot.message_handler(commands=['players'])
-# def show_players(message):
-#     """
-#     Retrieves a list of players from the database
-#     and sends a message containing each player's name to the specified chat.
+@bot.message_handler(commands=['players'])
+def show_players(message):
+    """
+    Retrieves a list of players from the database
+    and sends a message containing each player's name to the specified chat.
 
-#     Parameters:
-#     - message: The message object containing information about the chat.
+    Parameters:
+    - message: The message object containing information about the chat.
 
-#     Returns:
-#     None
-#     """
-#     players = db.get_players()
-#     for player in players:
-#         bot.send_message(message.chat.id, player[1])
+    Returns:
+    None
+    """
+    players = db.get_players()
+    for player in players:
+        bot.send_message(message.chat.id, player[1])
 
 
 def register_open(message):
@@ -118,14 +128,15 @@ def register_open(message):
     Returns:
         None
     """
-    if message.text == 'Зарегистрироваться':
+    if message.text == '🛃 Зарегистрироваться':
         go_to_register(message)
-    elif message.text == 'Войти':
+    elif message.text == '✅ Войти':
         go_to_sign_in(message)
-    elif message.text == 'Отмена':
+    elif message.text == '❌ Отмена':
         go_to_empty_bot(message, 'Счастливого пути, странник')
     else:
         go_to_authorizing_buttons(message)
+
 
 
 def go_to_register(message):
@@ -203,7 +214,7 @@ def register(message):
         None
 
     """
-    if message.text == 'Отмена':
+    if message.text == '❌ Отмена':
         go_to_authorizing_buttons(message)
         return
     if db.check_nickname_existence(message.text):
@@ -221,7 +232,7 @@ def register_continue(message, nickname):
     :param nickname: The nickname of the user.
     :type nickname: str
     """
-    if message.text == 'Отмена':
+    if message.text == '❌ Отмена':
         go_to_empty_bot(message, "Счастливого пути, странник")
         return
     go_to_register_confirm(message, nickname, message.text, "Подтверди пароль")
@@ -276,7 +287,7 @@ def go_to_certain_npc_menu(message, gamer, npc_data):
     """
     bot.clear_step_handler_by_chat_id(message.chat.id)
     markup = OTB.create_npcs_buttons()
-    sender = bot.send_message(message.chat.id, 'Choose', reply_markup = markup)
+    sender = bot.send_message(message.chat.id, 'Выбери действие', reply_markup = markup)
     bot.register_next_step_handler(sender, lambda m: handle_npcs_action(m, gamer, npc_data))
 
 
@@ -291,7 +302,6 @@ def go_to_loactions_menu(message, gamer):
     :param gamer: The gamer object
     :type gamer: Gamer
     """
-    print('invoked go_to_loactions_menu')
     bot.clear_step_handler_by_chat_id(message.chat.id)
     markup = OTB.create_location_buttons(gamer.get_current_location().get_linked_locations())
     sender = bot.send_message(message.chat.id, "Выбери локацию", reply_markup = markup)
@@ -309,7 +319,7 @@ def go_to_enemies_menu(message, gamer):
     """
     bot.clear_step_handler_by_chat_id(message.chat.id)
     markup = OTB.create_dict_buttons(gamer.get_current_location().get_enemies())
-    sender = bot.send_message(message.chat.id, "ok, go to enemies list", reply_markup = markup)
+    sender = bot.send_message(message.chat.id, "Переходим к списку врагов", reply_markup = markup)
     bot.register_next_step_handler(sender, lambda m : handle_enemies(m, gamer))
 
 
@@ -343,7 +353,7 @@ def register_confirm(message, nickname, password):
     Returns:
     - None
     """
-    if message.text == 'Отмена':
+    if message.text == '❌ Отмена':
         go_to_empty_bot(message, "Счастливого пути, странник")
         return
     if message.text == password:
@@ -390,7 +400,7 @@ def login(message):
     and the nickname as parameters.
     """
     nickname = message.text
-    if nickname == 'Отмена':
+    if nickname == '❌ Отмена':
         go_to_empty_bot(message, "Счастливого пути, странник")
         return
     if  db.check_nickname_existence(nickname):
@@ -414,7 +424,7 @@ def login_load(message, nickname):
         None
     """
     password = message.text
-    if password == 'Отмена':
+    if password == '❌ Отмена':
         go_to_empty_bot(message, "Счастливого пути, странник")
         return
     if not db.check_login_and_password(nickname, password):
@@ -472,19 +482,18 @@ def handle_game_top(message, gamer):
     Returns:
         None.
     """
-    if message.text == 'Персонажи':
+    if message.text == '👩‍🎨 Персонажи':
         go_to_npcs_menu(message, gamer)
-    elif message.text == 'Враги':
+    elif message.text == '🧛‍♂️ Враги':
         go_to_enemies_menu(message, gamer)
-    elif message.text == 'Карта':
+    elif message.text == '🌍 Карта':
         go_to_loactions_menu(message, gamer)
-    elif message.text == 'Инвентарь':
+    elif message.text == '🧳 Инвентарь':
         get_inventory(message, gamer)
-    elif message.text == 'Герой':
+    elif message.text == '🥷 Герой':
         go_to_hero(message, gamer, 'Выбери действие')
-    elif message.text == 'Выход':
+    elif message.text == '❌ Выход':
         go_back_to_login(message, gamer)
-        return
     else:
         bot.clear_step_handler_by_chat_id(message.chat.id)
         bot.register_next_step_handler(message, lambda m: handle_game_top(m, gamer))
@@ -519,19 +528,19 @@ def choose_hero_action(message, gamer):
     Returns:
         None
     """
-    if message.text == 'Назад':
+    if message.text == '❌ Назад':
         go_to_top_game_menu(message, gamer, 'Мир')
         return
-    elif message.text == 'Квесты':
+    elif message.text == '🧩 Квесты':
         get_quests(message, gamer)
-    elif message.text == 'Инфо':
+    elif message.text == '❓ Инфо':
         get_info(message, gamer)
-    elif message.text == 'Лечиться':
+    elif message.text == '➕ Лечение':
         if gamer.heal():
             go_to_hero(message, gamer, 'Лечение')
         else:
             go_to_hero(message, gamer, 'Нет подходящего зелья')
-    elif message.text == 'Инвентарь':
+    elif message.text == '🧳 Инвентарь':
         get_inventory(message, gamer)
 
 def get_info(message, gamer):
@@ -581,38 +590,49 @@ def get_quests(message, gamer):
 
 def choose_quest(message, gamer):
     """
-    Retrieves the quests for a given gamer and sends them as a list of buttons in a Telegram message.
+    This function is responsible for handling the user's choice of quest from a given message and gamer.
 
     Parameters:
-    - message (telegram.Message): The message triggering the function.
-    - gamer (Gamer): The gamer object to retrieve the quests for.
+        - message: The message object containing the user's input.
+        - gamer: The gamer object representing the user.
 
     Returns:
-    None
+        - None
+
+    Description:
+        - If the user's input is 'Назад', the function calls the 'go_to_hero' function and returns.
+        - Otherwise, it iterates through the gamer's current quests and checks if the user's input matches the name of any quest.
+        - If there is a match, the function sends the quest's task and starts the quest.
+        - If the quest is an instance of 'SecretPotionQuest', the function waits for 1 second and then performs the quest.
+        - After performing the quest, it sends a result message based on the outcome.
+        - If the quest is not 'SecretPotionQuest', it prompts the user to write an answer and registers a next step handler to perform the question quest.
     """
-    if message.text == 'Назад':
+    if message.text == '❌ Назад':
         go_to_hero(message, gamer, 'Возвращаемся к герою')
         return
-    else:
-        for quest in gamer.get_current_quests():
-            if message.text == quest.get_name():
-                bot.send_message(message.chat.id, quest.get_task())
-                bot.send_message(message.chat.id, quest.start_quest())
-                if isinstance(quest, qw.SecretPotionQuest):
-                    bot.send_message(message.chat.id, "Выполняем квест...")
-                    time.sleep(1)
-                    res = quest.perform()
-                    if res:
-                        result = f"Вы обнаружили {quest.artifact_name}!"
-                    else:
-                        result = f"К сожалению, {quest.artifact_name} не было найдено. Продолжайте поиски!"
-                    sender = bot.send_message(message.chat.id, result)
-                    gamer.remove_completed_quests()
-                    get_quests(sender, gamer)
+
+    for quest in gamer.get_current_quests():
+        if message.text == quest.get_name():
+            bot.send_message(message.chat.id, quest.get_task())
+            bot.send_message(message.chat.id, quest.start_quest())
+
+            if isinstance(quest, qw.SecretPotionQuest):
+                bot.send_message(message.chat.id, "Выполняем квест...")
+                time.sleep(1)
+                res = quest.perform()
+
+                if res:
+                    result = f"Вы обнаружили {quest.artifact_name}!"
                 else:
-                    sender = bot.send_message(message.chat.id, "Напишите ответ:")
-                    bot.clear_step_handler_by_chat_id(message.chat.id)
-                    bot.register_next_step_handler(sender, lambda m: perfom_question_quest(m, gamer, quest))
+                    result = f"К сожалению, {quest.artifact_name} не было найдено. Продолжайте поиски!"
+
+                sender = bot.send_message(message.chat.id, result)
+                gamer.remove_completed_quests()
+                get_quests(sender, gamer)
+            else:
+                sender = bot.send_message(message.chat.id, "Напишите ответ:")
+                bot.clear_step_handler_by_chat_id(message.chat.id)
+                bot.register_next_step_handler(sender, lambda m: perfom_question_quest(m, gamer, quest))
 
 
 def perfom_question_quest(message, gamer, quest):
@@ -666,13 +686,13 @@ def show_locations(message, gamer):
     Returns:
         None
     """
-    if message.text == 'Назад':
+    if message.text == '❌ Назад':
         go_to_top_game_menu(message, gamer, 'Мир')
         return
     else:
         locations_list = gamer.get_current_location().get_linked_locations()
         location = next((location for location in locations_list
-                        if location['name'] == message.text), None)
+                        if '🌏 ' + location['name'] == message.text), None)
         go_to_location_action(message, gamer, location)
 
 
@@ -710,12 +730,12 @@ def choose_action_of_location_menu(message, gamer, choosen):
     Returns:
         None
     """
-    if message.text == 'Назад':
+    if message.text == '❌ Назад':
         go_to_loactions_menu(message, gamer)
     else:
-        if message.text == 'Инфо':
+        if message.text == '❓ Инфо':
             show_location_info(message, gamer, choosen)
-        elif message.text == 'Перейти':
+        elif message.text == '⏩ Перейти':
             go_to_location(message, gamer, choosen)
 
 
@@ -765,16 +785,17 @@ def handle_enemies(message, gamer):
     Returns:
     None
     """
-    if message.text == 'Back':
+    if message.text == '❌ Назад':
         go_to_top_game_menu(message, gamer, 'Мир')
     else:
         enemies_data = gamer.get_current_location().get_full_enemies_data()
         enemy_name = message.text
         for enemy in enemies_data:
-            if enemy['name'] == enemy_name:
+            a = f"👳 {enemy['name']}"
+            if  a == enemy_name:
                 markup = OTB.create_enemy_buttons()
                 bot.clear_step_handler_by_chat_id(message.chat.id)
-                sender = bot.send_message(message.chat.id, 'Choose',
+                sender = bot.send_message(message.chat.id, 'Выбери действие',
                                             reply_markup = markup)
                 bot.register_next_step_handler(sender,
                                                lambda m: handle_enemies_action(m, gamer, enemy))
@@ -793,11 +814,11 @@ def handle_enemies_action(message, gamer, enemy):
     Returns:
         None
     """
-    if message.text == 'Убежать':
+    if message.text == '❌ Убежать':
         go_to_enemies_menu(message, gamer)
-    elif message.text == 'Инфо':
+    elif message.text == '❓ Инфо':
         handle_enemy_info_showing(message, gamer, enemy)
-    elif message.text == 'Бой':
+    elif message.text == '⚔️ Бой':
         handle_enemy_fighting(message, gamer, enemy)
 
 
@@ -872,12 +893,13 @@ def handle_npcs(message, gamer):
     Returns:
     None
     """
-    if message.text == 'Назад':
+    if message.text == '❌ Назад':
         go_to_top_game_menu(message, gamer, 'Мир')
     else:
         npcs_data = gamer.get_current_location().get_full_npcs_data()
         for npc_data in npcs_data:
-            if npc_data['name'] == message.text:
+            npc_name = npc_data['name']
+            if f'👳 {npc_name}' == message.text:
                 go_to_certain_npc_menu(message, gamer, npc_data)
                 break
 
@@ -895,14 +917,14 @@ def handle_npcs_action(message, gamer, npc_data):
     Returns:
     - None
     """
-    if message.text == 'Назад':
+    if message.text == '❌ Назад':
         go_to_npcs_menu(message, gamer)
-    elif message.text == 'Инфо':
+    elif message.text == '❓ Инфо':
         sender = get_description(message, npc_data)
         bot.register_next_step_handler(sender, lambda m: handle_npcs_action(m, gamer, npc_data))
-    elif message.text == 'Взять квест':
+    elif message.text == '🧩 Взять квест':
         assign_quest_to_hero(message, gamer, npc_data)
-    elif message.text == 'Поговорить':
+    elif message.text == '🗣 Поговорить':
         talk_to_npc(message, gamer, npc_data)
     else:
         sender = bot.send_message(message.chat.id, "Такого действия нет")
@@ -971,7 +993,7 @@ def continue_conversation(message, gamer, npc_instance, ind_message):
     Raises:
         None
     """
-    if message.text == 'Окончить беседу':
+    if message.text == '❌ Окончить беседу':
         go_to_npcs_menu(message, gamer)
         return
     next_msg_list = npc_instance.get_next_messages(ind_message)
@@ -979,7 +1001,7 @@ def continue_conversation(message, gamer, npc_instance, ind_message):
         bot.register_next_step_handler(message,
                                lambda m: continue_conversation(m, gamer, npc_instance, ind_message))
 
-    if message.text != 'Поговорить':
+    if message.text != '🗣 Поговорить':
         ind_message = next_msg_list[int(message.text) - 1].ident
         answer = npc_instance.get_messages(ind_message)
         if not answer:
@@ -996,6 +1018,4 @@ def continue_conversation(message, gamer, npc_instance, ind_message):
 
 
 
-
-
-
+bot.infinity_polling()

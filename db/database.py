@@ -28,70 +28,170 @@ class DB:
         return cls._instance
 
     def __init__(self):
+        """
+        Initializes the class instance.
+        """
         self.dialog_messages = {}
         self._init_dialogs()
         self.conn = sqlite3.connect('users.db')
         self.cur = self.conn.cursor()
 
     def get_npcs(self):
+        """
+        Read the characters data from a JSON file and return it.
+
+        :return: The characters data.
+        """
         with open(FILE_CHARACTERS) as fp:
             data = json.load(fp)
             return data
 
     def get_npc(self, ident: str):
+        """
+        Retrieves a non-player character (NPC) based on its identifier.
+
+        Args:
+            ident (str): The identifier of the NPC.
+
+        Returns:
+            dict: The NPC data as a dictionary if found, None otherwise.
+        """
         with open(FILE_CHARACTERS) as fp:
             data = json.load(fp)
             return data.get(ident)
 
     def get_enemies(self):
+        """
+        Reads the enemies data from the specified file and returns it.
+
+        Parameters:
+            self (object): The instance of the class.
+
+        Returns:
+            dict: The data containing the enemies.
+        """
         with open(FILE_ENEMIES) as fp:
             data = json.load(fp)
             return data
 
     def get_enemy(self, ident: str):
+        """
+        Get the enemy data for the given identifier.
+
+        Parameters:
+            ident (str): The identifier of the enemy.
+
+        Returns:
+            dict or None: The enemy data if found, None otherwise.
+        """
         with open(FILE_ENEMIES) as fp:
             data = json.load(fp)
             return data.get(ident)
 
     def get_dialogs(self):
+        """
+        Get the list of dialog messages.
+
+        Returns:
+            list: The list of dialog messages.
+        """
         return self.dialog_messages
 
     def get_search_quests(self):
+        """
+        Read the contents of the search quests file and return the data as a dictionary.
+
+        Returns:
+            dict: The data read from the search quests file.
+        """
         with open(FILE_SEARCH_QUESTS) as fp:
             data = json.load(fp)
             return data
 
     def get_search_quest(self, ident: str):
+        """
+        Retrieves a search quest from the specified identifier.
+
+        Parameters:
+            ident (str): The identifier of the search quest.
+
+        Returns:
+            Any: The search quest associated with the identifier, or None if not found.
+        """
         with open(FILE_SEARCH_QUESTS) as fp:
             data = json.load(fp)
             return data.get(ident)
 
     def get_riddle_quests(self):
+        """
+        Opens a file containing riddle quests and returns the data as a Python dictionary.
+
+        Returns:
+            dict: The riddle quests data.
+        """
         with open(FILE_RIDDLE_QUESTS) as fp:
             data = json.load(fp)
             return data
 
     def get_riddle_quest(self, ident: str):
+        """
+        Retrieves a riddle quest from the JSON file based on the provided identifier.
+
+        Parameters:
+            ident (str): The identifier of the riddle quest.
+
+        Returns:
+            str: The riddle quest associated with the provided identifier.
+        """
         with open(FILE_RIDDLE_QUESTS) as fp:
             data = json.load(fp)
             return data.get(ident)
 
     def get_locations(self) -> list[dict]:
+        """
+        Get the locations from the file.
+
+        :return: A list of dictionaries representing the locations.
+        :rtype: list[dict]
+        """
         with open(FILE_LOCATIONS) as fp:
             data = json.load(fp)
             return data
 
     def get_location(self, key: str) -> dict:
+        """
+        Retrieves the location associated with the given key.
+
+        Parameters:
+            key (str): The key used to retrieve the location.
+
+        Returns:
+            dict: The location associated with the given key, or None if the key is not found.
+        """
         with open(FILE_LOCATIONS) as fp:
             data = json.load(fp)
             return data.get(key)
 
     def _init_dialogs(self):
+        """
+        Initializes the dialogs by reading the data from the FILE_DIALOGS file
+        and converting it to the appropriate format.
+        """
         with open(FILE_DIALOGS) as fp:
             data = json.load(fp)
             self._convert_dialogs(data)
 
     def _convert_dialogs(self, dialogs_lst, prefix=''):
+        """
+        Converts a list of dialog dictionaries into a list of message identifiers.
+
+        Args:
+            dialogs_lst (list): A list of dialog dictionaries representing conversations.
+            prefix (str, optional): A prefix to be added to the identifiers of the converted dialogs. Defaults to ''.
+
+        Returns:
+            list: A list of message identifiers representing the converted dialogs.
+        """
         messages_ids = []
         for dialog in dialogs_lst:
             answers = dialog['next']
@@ -112,6 +212,18 @@ class DB:
         return messages_ids
 
     def fill_data(self, path: str) -> dict:
+        """
+        Fill data from a file.
+
+        Parameters:
+            path (str): The path of the file to be opened.
+
+        Returns:
+            dict: The data loaded from the file.
+
+        Raises:
+            FileNotFoundError: If the file is not found.
+        """
         try:
             f = open(path, 'r')
             dest = json.load(f)
@@ -122,7 +234,6 @@ class DB:
             return dest
 
 
-    # CURSEBOW_CODE ******************************************************************
     def get_players(self):
         """
         Retrieves all players from the database.
@@ -173,7 +284,8 @@ class DB:
         """
         Create the user inventory table if it does not already exist.
 
-        This function executes an SQL statement to create a table named 'inventory' in the database. The table has three columns: 'user_name' of type TEXT, 'item' of type TEXT, and 'count' of type INTEGER.
+        This function executes an SQL statement to create a table named 'inventory' in the database.
+        The table has three columns: 'user_name' of type TEXT, 'item' of type TEXT, and 'count' of type INTEGER.
 
         Parameters:
             None
@@ -264,7 +376,6 @@ class DB:
         data = self.cur.execute("SELECT * FROM users WHERE name = ?", (user.name,)).fetchall()
         user.hp = data[0][2]
         user.level = data[0][3]
-        print(f'the loaded data location is !!!!!!!!!!!!!!!!!!! {data[0][4]}')
         user.go(wmc.Location(data[0][4]))
 
 
@@ -278,7 +389,6 @@ class DB:
         Returns:
             None
         """
-        print(f'current location id for user is {user.current_location.id}')
         self.cur.execute("UPDATE users SET hp = ?, level = ?, location = ? WHERE name = ?",
                         (user.hp, user.level, user.current_location.id, user.name))
         self.conn.commit()
@@ -361,7 +471,6 @@ class DB:
             None
         """
         data = self.cur.execute("SELECT * FROM quests WHERE name = ?", (user.name,)).fetchall()
-        print(f'loaded quests are {data}')
         for item in data:
             user.current_quests.append(item)
 
@@ -377,7 +486,6 @@ class DB:
             None
         """
         self.cur.execute("DELETE FROM quests WHERE name = ?", (user.name,))
-        print(f'the current quests are {user.current_quests}')
         for quest in user.current_quests:
             self.cur.execute("INSERT INTO quests VALUES(?, ?)", (user.name, quest))
         self.conn.commit()
