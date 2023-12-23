@@ -1,6 +1,4 @@
-# import json
-# import logging
-
+from flask import Flask
 
 import telebot
 from telebot import types
@@ -25,6 +23,8 @@ bot = telebot.TeleBot(token, threaded=False)
 db = DB()
 db.create_tables()
 gamers_set = set()
+
+app = Flask(__name__)
 
 #*************************************************************************************
 #*************************************************************************************
@@ -1092,3 +1092,5 @@ def continue_conversation(message, gamer, npc_instance, ind_message):
 
 
 bot.infinity_polling()
+
+
