@@ -9,4 +9,4 @@ To launch console version of game run **python3 console_client.py**
 
 To launch telegram version register new bot, set new **api-token** in **app.py**, run **python3 app.py** and enjoy.
 
-You can visit **@abc5151_bot** but it is on *free* pythonanywhere server and can be not-working since loading or something else.
+You can visit **@abc5151_bot** but it is on *free* pythonanywhere server and can be not-working or lag since server loading or something else.
