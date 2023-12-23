@@ -257,6 +257,7 @@ class DB:
         Raises:
             FileNotFoundError: If the file is not found.
         """
+        dest = {}
         try:
             f = open(path, 'r')
             dest = json.load(f)
